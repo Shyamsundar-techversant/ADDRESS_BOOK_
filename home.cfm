@@ -19,11 +19,6 @@
 	<cfelse>
 		<cfset form.public=0>
 	</cfif>
-	<!--- <cffile action="upload" fileField="form.uploadImg" destination="#application.imageSavePath#" nameconflict="makeunique">
-	<cfset imageFilePath="#application.imageSavePath#\#cffile.SERVERFILE#">
-	<cfset imageFile ="#cffile.SERVERFILE#">
-	<cfdump var="#imageFile#"> --->
-
 	<cfif NOT  structKeyExists(form,"hobby")>
 		<cfset form.hobby="">
 	</cfif>

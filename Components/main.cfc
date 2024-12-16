@@ -720,6 +720,99 @@
 	<!--- GET ALL CONTACT --->
 	<cffunction name="getData" access="remote" returntype="any" returnformat="JSON">
 		<cfargument name="id" type="string" required="false" >
+		<cfif structKeyExists(arguments,"id")>
+			<cfset local.decryptedId=decrypt(arguments.id,application.encryptionKey,"AES","Hex")>
+		</cfif>
+		<cftry>
+			<cfquery name="local.getCont" datasource="coldfusion">
+				SELECT 
+					c.id,
+					<cfif NOT structKeyExists(arguments,"id")>
+						c.userId,					
+					</cfif>
+					c.titleId,
+					c.firstName,
+					c.lastName,
+                        		c.genderId,
+                        		c.dob,
+                        		c.imagePath,
+                        		c.address,
+					c.street,
+					c.pincode,
+					c.email,
+					c.phone,
+					c.public,
+					t.titles,
+					g.gender_values,
+					GROUP_CONCAT(h.hobby_name) AS hobby_name, 
+					GROUP_CONCAT(h.id) AS hobby_Id
+				FROM 
+					contacts c
+				INNER JOIN 
+					title t ON c.titleId=t.id
+				INNER JOIN
+					gender g ON c.genderId=g.id
+				INNER JOIN
+					contact_hobbies ch ON c.id=ch.contact_id
+				INNER JOIN 
+					hobbies h ON ch.hobby_id=h.id
+				<cfif structKeyExists(arguments,"id")>
+					WHERE 
+						c.id=<cfqueryparam value="#decryptedId#"  cfsqltype="cf_sql_integer">
+				<cfelse>
+					WHERE
+						(	userId=<cfqueryparam value="#session.userId#" cfsqltype="cf_sql_integer">
+								OR 
+							public=<cfqueryparam value="1" cfsqltype="cf_sql_integer">
+						)
+					GROUP BY
+						c.id
+				</cfif>						
+			</cfquery>
+				
+			<cfif NOT structKeyExists (arguments,"id")>
+				<cfreturn local.getCont>
+			<cfelse>
+				<cfdump var="#local.getCont#">
+				<cfset local.idData = {
+						
+							'id'=local.getCont.id,
+							'titleId' = local.getCont.titleId,
+							'firstName' = local.getCont.firstName,
+							'lastName' = local.getCont.lastName,
+							'genderId' = local.getCont.genderId,
+							'dob' = local.getCont.dob,
+							'imagePath' = local.getCont.imagePath,
+							'address' = local.getCont.address,
+							'street' = local.getCont.street,
+							'pincode' = local.getCont.pincode,
+							'email' = local.getCont.email,
+							'phone' = local.getCont.phone,
+							'public' = local.getCont.public,
+							'titles' = local.getCont.titles,
+							'gender_values'= local.getCont.gender_values,
+							'hobby_name' = local.getCont.hobby_name,
+							'hobby_Id' = local.getCont.hobby_Id						
+	
+						}
+				>
+				<cfreturn local.idData>
+			</cfif> 		
+		<cfcatch>
+			<cfdump var="#cfcatch#">
+		</cfcatch>
+		</cftry>
+	</cffunction>
+
+
+
+
+
+
+
+	<!--- GET ALL CONTACT --->
+	<cffunction name="getDatas" access="remote" returntype="any" returnformat="JSON">
+		<cfargument name="id" type="string" required="false" >
 		<cftry>
 			<cfif structKeyExists(arguments,"id") >
 				<cfset local.decryptedId=decrypt(arguments.id,application.encryptionKey,"AES","Hex")>
