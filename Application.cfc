@@ -5,6 +5,7 @@
 	<cffunction name="onApplicationStart" returntype="void">
 		<cfset application.encryptionKey = generateSecretKey("AES")>
 		<cfset application.imageSavePath="C:\ColdFusion2021\cfusion\wwwroot\Address_Book_">
+		<cfset application.tempPath="C:\ColdFusion2021\cfusion\wwwroot\Address_Book_\temp">
 		<cfset application.dbObj=createObject("component","Components.main")>
 	</cffunction>	
 	<cffunction name="onRequestStart" returnType="void">
