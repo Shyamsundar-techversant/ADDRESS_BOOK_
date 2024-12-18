@@ -773,7 +773,6 @@
 			<cfif NOT structKeyExists (arguments,"id")>
 				<cfreturn local.getCont>
 			<cfelse>
-				<cfdump var="#local.getCont#">
 				<cfset local.idData = {
 						
 							'id'=local.getCont.id,
