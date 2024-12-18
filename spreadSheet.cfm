@@ -5,7 +5,7 @@
 	<cfset myFormat.alignV="center">
 	<cfset data={color="white",fgcolor="grey_50_percent",alignV="center"}>
 	<cfset dataHead={color="white",fgcolor="grey_50_percent",bold="true",alignV="center"}>
-	<cfset contactList=application.dbObj.getTotalData()>
+	<cfset contactList=application.dbObj.getData()>
 
 	<cfset spreadsheetSetCellValue(spreadsheetObj, "TITLE", 1, 1)>
 	<cfset spreadsheetSetCellValue(spreadsheetObj, "FIRSTNAME", 1, 2)>
@@ -31,7 +31,7 @@
 			<cfset spreadsheetSetCellValue(spreadsheetObj, "#contactList.STREET#",currentRow+1, 8)>
 			<cfset spreadsheetSetCellValue(spreadsheetObj, "#contactList.ADDRESS#", currentRow+1, 9)>
 			<cfset spreadsheetSetCellValue(spreadsheetObj, "#contactList.PINCODE#",currentRow+1, 10)>
-			<cfset spreadsheetSetCellValue(spreadsheetObj,"#contactList.HOBBIES#",currentRow+1,11)>
+			<cfset spreadsheetSetCellValue(spreadsheetObj,"#contactList.hobby_name#",currentRow+1,11)>
 			<cfset SpreadsheetSetRowHeight(spreadsheetObj,currentRow+1,20)>
 		</cfoutput>
 	<cfset SpreadSheetSetColumnWidth(spreadsheetobj,1,25)>
