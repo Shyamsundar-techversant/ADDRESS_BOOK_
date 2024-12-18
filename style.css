@@ -145,8 +145,8 @@ a{
 	flex-direction:column;
 	justify-content:center;
 	align-items:center;
-	gap:10px;
-	max-height:210px;
+	gap:14px;
+	max-height:250px;
 }
 .user-img-logo{
 	width:70px;
@@ -162,6 +162,13 @@ a{
 	font-size:28px;
 }
 .user-creation{
+	padding:7px 10px !important;
+	font-size:12px !important;
+	border-radius:20px !important;
+	color:#fff !important;
+	background:#2e77b1 !important;
+}
+.template-creation{
 	padding:7px 10px !important;
 	font-size:12px !important;
 	border-radius:20px !important;
@@ -269,6 +276,52 @@ a{
 	background:red;
 	color:white;
 }
+
+
+/* Template Data */
+.template-btn{
+	color:white;
+	font-size:14px;
+	padding:8px 10px;
+	border:none !important;
+}
+.template-data-btn{
+	background:#2e77b1 !important;
+}
+.plain-template-btn{
+	background:#008000 !important;
+}
+.excel-upload-head{
+	color:#2e77b1;
+	border-bottom:1px solid #2e77b1;
+}
+.excel-form-label{
+	font-size:14px !important;
+	color:#2e77b1 !important;
+}
+.excel-btns{
+	display:flex;
+	gap:20px;
+}
+.excel-form-close{
+	background:none !important;
+	padding:8px 10px;
+	border-radius:16px !important;
+	border:1px solid #2e77b1 !important;
+	width:45px !important;
+	height:35px !important;
+	color:#2e77b1 !important;
+	
+}
+.add-excel-file{
+	padding:8px 10px !important;
+	border-radius:16px !important;
+	background:#2e77b1 !important;
+	color:#ffff !important;
+	border:none !important;
+}
+
+
 
 /* ERROR DATA */
 #error-data li{
