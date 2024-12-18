@@ -5,8 +5,9 @@
 	<cfset myFormat.alignV="center">
 	<cfset data={color="white",fgcolor="grey_50_percent",alignV="center"}>
 	<cfset dataHead={color="white",fgcolor="grey_50_percent",bold="true",alignV="center"}>
-	<cfset contactList=application.dbObj.getData()>
-
+	<cfif structKeyExists(url,"excelData")>
+		<cfset contactList=application.dbObj.getData()>
+	</cfif>
 	<cfset spreadsheetSetCellValue(spreadsheetObj, "TITLE", 1, 1)>
 	<cfset spreadsheetSetCellValue(spreadsheetObj, "FIRSTNAME", 1, 2)>
 	<cfset spreadsheetSetCellValue(spreadsheetObj, "LASTNAME", 1, 3)>
@@ -18,7 +19,9 @@
 	<cfset spreadsheetSetCellValue(spreadsheetObj, "ADDRESS",1,9)>
 	<cfset spreadsheetSetCellValue(spreadsheetObj, "PINCODE",1,10)>
 	<cfset spreadsheetSetCellValue(spreadsheetObj,"HOBBIES",1,11)>
-	<cfset SpreadsheetFormatRow (spreadsheetObj, dataHead, 1)>	
+	<cfset spreadsheetSetCellValue(spreadsheetObj,"PUBLIC",1,12)>	
+	<cfset SpreadsheetFormatRow (spreadsheetObj, dataHead, 1)>
+	<cfif structKeyExists(url,"excelData")>	
 		<cfoutput query="contactList">
 			<cfset fullName = #contactList.FIRSTNAME#& " " &#contactList.LASTNAME#>
 			<cfset spreadsheetSetCellValue(spreadsheetObj, "#contactList.TITLES#", currentRow+1, 1)>
@@ -32,8 +35,10 @@
 			<cfset spreadsheetSetCellValue(spreadsheetObj, "#contactList.ADDRESS#", currentRow+1, 9)>
 			<cfset spreadsheetSetCellValue(spreadsheetObj, "#contactList.PINCODE#",currentRow+1, 10)>
 			<cfset spreadsheetSetCellValue(spreadsheetObj,"#contactList.hobby_name#",currentRow+1,11)>
+			<cfset spreadsheetSetCellValue(spreadsheetObj,"#contactList.public#",currentRow+1,12)>
 			<cfset SpreadsheetSetRowHeight(spreadsheetObj,currentRow+1,20)>
 		</cfoutput>
+	</cfif>
 	<cfset SpreadSheetSetColumnWidth(spreadsheetobj,1,25)>
 	<cfset SpreadSheetSetColumnWidth(spreadsheetobj,2,25)>
 	<cfset SpreadSheetSetColumnWidth(spreadsheetobj,3,25)>

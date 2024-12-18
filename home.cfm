@@ -465,11 +465,13 @@
 								<div class="row p-3">
 									<div class="col">
 										<div class="user-form-buttons">
-											<button class="template-data-btn template-btn" 																onclick="window.location.href='spreadSheet.cfm';"
+											<button class="template-data-btn template-btn" 																onclick="window.location.href='spreadSheet.cfm?excelData=1';"
 											>
 												Template With Data
 											</button>
-											<button  class="plain-template-btn template-btn">
+											<button  class="plain-template-btn template-btn"
+												onclick="window.location.href='spreadSheet.cfm';"
+											>
 												Plain Template
 											</button>
 										</div>
@@ -485,7 +487,7 @@
 														Upload Excel *
 													</label>
 													<input type="file" class="form-control" id="upload-excel"
-														name="excel-upload"	
+														name="excelUpload"	
 													>
 												</div>
 
@@ -515,7 +517,9 @@
 				</div>
 			</div>
 		</div>	
-		
+		<cfif structKeyExists(form,"excelSubmit")>
+			<cfinclude template="excelUpload.cfm">
+		</cfif>
 
 
 		<script src="./js/bootstrap.bundle.min.js"></script>
