@@ -225,7 +225,7 @@
 		<cfargument name="pincode" type="string" required="true">	
 		<cfargument name="hobbies" type="string" required="true">
 		<cfargument name="id" type="string" required="false">
-		<cfargument name="public" type="numeric" required="true">
+		<cfargument name="public" type="numeric" required="false">		
 		<cfset local.errors=[]>	
 
 		
