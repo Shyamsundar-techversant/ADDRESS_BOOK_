@@ -109,6 +109,11 @@
 							>
  								 CREATE CONTACT
 							</button>
+							<button type="button" class="btn btn-primary template-creation"  id="template-cont"
+								data-bs-toggle="modal" data-bs-target="#templateDataModal"	
+							>
+ 								 UPLOAD
+							</button>
 						</div>
 						<div class="user-profiles">
 							<table class="table">
@@ -445,6 +450,71 @@
 			</div>
 		</div>		
 
+		<!--- Modal Upload Template data --->
+		<div	class="modal" 
+			id="templateDataModal"     		
+		>
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header template-modal-head">
+						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body">
+						<div>
+							<div class="container template-container">			
+								<div class="row p-3">
+									<div class="col">
+										<div class="user-form-buttons">
+											<button class="template-data-btn template-btn">
+												Template With Data
+											</button>
+											<button  class="plain-template-btn template-btn">
+												Plain Template
+											</button>
+										</div>
+									</div>
+								</div>
+								<div class="row p-3">
+									<div class="col">
+										<h4 class="excel-upload-head mb-3">Upload Excel File</h4>
+										<form method="post" enctype="multipart/form-data" id="excel-upload-form">
+											<div class="row mb-4">
+												<div class="col">
+													<label for="upload-excel" class="form-label excel-form-label">
+														Upload Excel *
+													</label>
+													<input type="file" class="form-control" id="upload-excel"
+														name="excel-upload"	
+													>
+												</div>
+
+											</div>	
+											<div class="row">
+												<div class="col">
+													<div class="excel-btns">
+														<button type="button" class="btn-close 
+															excel-form-close" 
+															data-bs-dismiss="modal"
+														>
+															Close
+														</button>
+														<button class="add-excel-file" type="submit" 																name="excelSubmit" id="excel-cont">
+															Submit
+														</button>
+													</div>
+												</div>
+											</div>								
+										</form>
+									</div>
+								</div>
+							</div>
+						</div>						
+
+					</div>
+				</div>
+			</div>
+		</div>	
+		
 
 
 		<script src="./js/bootstrap.bundle.min.js"></script>
