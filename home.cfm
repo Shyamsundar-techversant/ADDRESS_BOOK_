@@ -465,7 +465,8 @@
 								<div class="row p-3">
 									<div class="col">
 										<div class="user-form-buttons">
-											<button class="template-data-btn template-btn">
+											<button class="template-data-btn template-btn" 																onclick="window.location.href='spreadSheet.cfm';"
+											>
 												Template With Data
 											</button>
 											<button  class="plain-template-btn template-btn">
