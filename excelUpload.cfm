@@ -12,21 +12,52 @@
 	query="excelContactAdd"
 	sheetname="AddressBook"
 >
-
+<cfset errorArray = []>
+<cfset successArray = []>
 <cfloop query = "excelContactAdd">
-	<cfset local.result = application.dbObj.validateFormAndCreateOrUpdateUser(
-											"title" = excelContactAdd.title,
-											"firstname" = excelContactAdd.firstname,
-											"lastname" = excelContactAdd.lastname,
-											"gender" = excelContactAdd.gender,
-											"dob" = excelContactAdd.dob,
-											"email" = excelContactAdd.email,
-											"phone" = excelContactAdd.phone,
-											"address" = excelContactAdd.address,
-											"street" = excelContactAdd.street,
-											"pincode" = excelContactAdd.pincode,
-											"hobbies" = excelContactAdd.pincode,
-											"public" = excelContactAdd.public
+	<cfset result = application.dbObj.validateFormAndCreateOrUpdateUser(
+											titleName = excelContactAdd.title,
+											firstname = excelContactAdd.firstname,
+											lastname = excelContactAdd.lastname,
+											genderName = excelContactAdd.gender,
+											dob = excelContactAdd.dob,
+											email = excelContactAdd.email,
+											phone = excelContactAdd.phone,
+											address = excelContactAdd.address,
+											street = excelContactAdd.street,
+											pincode = excelContactAdd.pincode,
+											hobbieName = excelContactAdd.hobbies,
+											public = excelContactAdd.public,
+											isExcel = 1
 										)
 	>	
+	<cfset excelRow = {
+				titleName = excelContactAdd.title,
+				firstname = excelContactAdd.firstname,
+				lastname = excelContactAdd.lastname,
+				genderName = excelContactAdd.gender,
+				dob = excelContactAdd.dob,
+				email = excelContactAdd.email,
+				phone = excelContactAdd.phone,
+				address = excelContactAdd.address,
+				street = excelContactAdd.street,
+				pincode = excelContactAdd.pincode,
+				hobbieName = excelContactAdd.hobbies,
+				public = excelContactAdd.public,
+				remarks = result.remarks			
+
+			}
+	>
+	<cfif arrayLen(result.errors) GT 0>
+		<cfset arrayAppend(errorArray,excelRow)>
+	<cfelse>
+		<cfset arrayAppend(successArray,excelRow)>
+	</cfif>
 </cfloop> 
+
+
+
+
+
+
+
