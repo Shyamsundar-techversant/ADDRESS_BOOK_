@@ -54,6 +54,9 @@
 		<cfset variables.hobbies = form.hobby>	
 	</cfif>
 </cfif>
+<cfif structKeyExists(form,"excelSubmit")>
+	<cfinclude template="excelUpload.cfm">
+</cfif>
 <cfset variables.getContacts=application.dbObj.getData()>
 <!DOCTYPE html>
 <html>
@@ -517,10 +520,6 @@
 				</div>
 			</div>
 		</div>	
-		<cfif structKeyExists(form,"excelSubmit")>
-			<cfinclude template="excelUpload.cfm">
-		</cfif>
-
 
 		<script src="./js/bootstrap.bundle.min.js"></script>
 		<script src="./js/jquery-3.7.1.min.js"></script>
