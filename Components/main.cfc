@@ -212,10 +212,12 @@
 
 	<!--- VALIDATE CONTACT FORM--->
 	<cffunction name="validateFormAndCreateOrUpdateUser" access="remote" returntype="any">
-		<cfargument name="title" type="string" required="true">
+		<cfargument name="titleName" type="string" required = "false">
+		<cfargument name="title" type="numeric" required="false">
 		<cfargument name="firstname" type="string" required="true">
 		<cfargument name="lastname" type="string" required="true">
-		<cfargument name="gender" type="string" required="true">
+		<cfargument name="genderName" type="string" required="false">
+		<cfargument name="gender" type="string" required="false">
 		<cfargument name="dob" type="string" required="true">
 		<cfargument name="formFile" type="string" required="false">
 		<cfargument name="email" type="string" required="true">
@@ -223,12 +225,16 @@
 		<cfargument name="address" type="string" required="true">
 		<cfargument name="street" type="string" required="true">
 		<cfargument name="pincode" type="string" required="true">	
-		<cfargument name="hobbies" type="string" required="true">
+		<cfargument name="hobbies" type="string" required="false">
+		<cfargument name="hobbieName"  type = "string" required="false">
 		<cfargument name="id" type="string" required="false">
-		<cfargument name="public" type="numeric" required="false">		
+		<cfargument name="public" type="numeric" required="false">	
+		<cfargument name="isExcel" type="numeric" required="false">
+
 		<cfset local.errors=[]>	
 
 		
+
 
 		<!--- Title --->
 		<cfset local.titleArr=[]>	
@@ -236,8 +242,25 @@
 		<cfloop query="local.titleValues">
 			<cfset arrayAppend(local.titleArr,local.titleValues.id)>
 		</cfloop>
-		<cfif NOT ArrayContains(local.titleArr,arguments.title)>
-			<cfset arrayAppend(local.errors,"*Enter a valid title")>
+		<cfif structKeyExists(arguments,"title")>
+			<cfif NOT ArrayContains(local.titleArr,arguments.title)>
+				<cfset arrayAppend(local.errors,"*Enter a valid title")>
+			</cfif>
+		</cfif>
+		<cfif structKeyExists(arguments,"titleName")>
+			<cfquery name="local.getTitleId" datasource="coldfusion">
+				SELECT 
+					id
+				FROM
+					title
+				WHERE
+					titles = <cfqueryparam value="#arguments.titleName#" cfsqltype="cf_sql_varchar">
+			</cfquery>
+			<cfif local.getTitleId.recordCount EQ 1>
+				<cfset arguments.title = local.getTitleId.id>
+			<cfelse>
+				<cfset arrayAppend(local.errors,"*Invalid Title")>
+			</cfif>
 		</cfif>
 		
 		<!--- VALIDATE FIRSTNAME  --->	
@@ -260,9 +283,27 @@
 		<cfloop query="local.genderValues">
 			<cfset arrayAppend(local.genderArr,local.genderValues.id)>	
 		</cfloop>
-		<cfif NOT ArrayContains(local.genderArr,arguments.gender)>
-			<cfset arrayAppend(local.errors,"*Please enter a valid gender")>
-		</cfif> 
+		<cfif structKeyExists(arguments,"gender")>
+			<cfif NOT ArrayContains(local.genderArr,arguments.gender)>
+				<cfset arrayAppend(local.errors,"*Please enter a valid gender")>
+			</cfif> 
+		</cfif>
+		<cfif structKeyExists(arguments,"genderName")>
+			<cfquery name="local.getGenderId" datasource="coldfusion">
+				SELECT 
+					id
+				FROM
+					gender
+				WHERE
+					gender_values = <cfqueryparam value="#arguments.genderName#" cfsqltype="cf_sql_varchar">
+			</cfquery>
+			<cfif local.getGenderId.recordCount EQ 1>
+				<cfset arguments.gender = local.getGenderId.id>
+			<cfelse>
+				<cfset arrayAppend(local.errors,"*Invalid Gender")>
+			</cfif>
+		</cfif>		
+
 
 		<!--- VALIDATE DOB --->
 		<cfif len(arguments.dob) EQ 0>
@@ -278,7 +319,11 @@
 
 		<cfif NOT structKeyExists(form,"uploadImg") OR arguments.formFile EQ "">
 			<cfif NOT structKeyExists(arguments,"id") OR arguments.id EQ "">
-				<cfset arrayAppend(local.errors,"* Photo is required")>
+				<cfif arguments.isExcel>
+					<cfset arguments['uploadImg'] = "contactImage.png">	
+				<cfelse>
+					<cfset arrayAppend(local.errors,"* Photo is required")>
+				</cfif>
 			<cfelse>
 				<cfset local.decryptedId=decrypt(arguments.id,application.encryptionKey,"AES","Hex")>
 				<cfquery name="local.contactImage" datasource="coldfusion">
@@ -325,7 +370,9 @@
 			FROM 
 				contacts
 			WHERE 
-				email=<cfqueryparam value="#arguments.email#" cfsqltype="cf_sql_varchar">				
+				email=<cfqueryparam value="#arguments.email#" cfsqltype="cf_sql_varchar">
+			AND
+				userId = <cfqueryparam value="#session.userId#" cfsqltype="cf_sql_integer">				
 		</cfquery>
 		<cfif NOT structKeyExists(arguments,"id")>
 			<cfif local.contactEmail.recordCount GT 0>
@@ -361,10 +408,44 @@
 		<cfelseif NOT reFindNoCase("^[1-9][0-9]{5}$",arguments.pincode)>
 			<cfset arrayAppend(local.errors,"*Enter a valid pincode")>
 		</cfif> 
-		<!--- VALIDATE HOBBIES --->
 
-		<cfif Len(arguments.hobbies) EQ 0>
-			<cfset arrayAppend(local.errors,"*Hobbies required")>
+		<!--- VALIDATE HOBBIES --->
+		<cfif  NOT structKeyExists(arguments,"hobbies")>
+			<cfif structKeyExists(arguments,"hobbieName")>
+				
+				<cfset local.dbHobbies = getHobbies()>
+				<cfset local.dbHobbyList = valueList(local.dbHobbies.hobby_name)>
+				
+				<cfset local.excelHobbyList = arguments.hobbieName>				
+				<cfset local.invalidHobby = [] >
+				<cfloop list="#local.excelHobbyList#" item="local.hobbyName">
+					<cfif NOT  ListFindNoCase(local.dbHobbyList,local.hobbyName)>
+						<cfset arrayAppend(local.invalidHobby,local.hobbyName)>
+					</cfif>				
+				</cfloop>
+		
+				<cfif arrayLen(local.invalidHobby) GT 0>
+					<cfset arrayAppend(local.errors,"*Invalid Hobby")>
+				<cfelse>
+
+				</cfif>
+
+				<cfquery name="local.getHobbyId" datasource="coldfusion">
+					SELECT
+						id
+					FROM 
+						hobbies
+					WHERE
+						hobby_name
+					IN(<cfqueryparam value="#arguments.hobbieName#" cfsqltype="cf_sql_varchar" list="true">)
+				</cfquery> 	
+				<cfif local.getHobbyId.recordCount GT 0>
+					<cfset arguments['hobbies'] = valueList(local.getHobbyId.id)>
+				</cfif>	
+
+			<cfelse>
+				<cfset arrayAppend(local.errors,"*Hobbies required")>					
+			</cfif>
 		<cfelse>
 			<cfset local.hobbyArr=[]>
 			<cfset local.hobbyValues=getHobbies()>
@@ -389,19 +470,33 @@
 		<cfif NOT arrayContains(local.publicArr,arguments.public)>
 			<cfset arrayAppend(local.errors,"*Can'nt change the value of public")>
 		</cfif>
-		
-		
+	
 		<!--- ADD EDIT FUNCTION CALL  --->
-		
+		<cfset local.excelResult = {
+					'errors':[],
+					'remarks':""
+					}
+		> 
 		<cfif arrayLen(local.errors) EQ 0>
 			<cfset local.result = addEditContact(
 						argumentCollection=arguments									
 					)
 			>
-			<cfreturn local.errors>
-		<cfelse>	
-			<cfreturn local.errors>
-		</cfif>
+			<cfif NOT structKeyExists(arguments,"isExcel")>
+				<cfreturn local.errors>
+			<cfelse>
+				<cfset local.excelResult.remarks = structKeyExists(arguments,"id")?"UPDATED" : "ADDED">
+			</cfif>
+			
+		<cfelse>
+			<cfif NOT structKeyExists(arguments,"isExcel")>
+				<cfreturn local.errors>
+			<cfelse>
+				<cfset local.excelResult.errors = local.errors>	
+				<cfset local.excelResult.remarks = arrayToList(local.errors)>
+				<cfreturn local.excelResult>
+			</cfif>
+		</cfif> 
 	</cffunction> 
 	
 	<!--- ADD EDIT CONTACT --->
