@@ -364,19 +364,42 @@
 			<cfset arguments['uploadImg'] = local.imagePath>
 		</cfif>
 		<!--- VALIDATE EMAIL  --->
-		<cfquery name="local.contactEmail" datasource="coldfusion">
-			SELECT 
-				email
-			FROM 
-				contacts
-			WHERE 
-				email=<cfqueryparam value="#arguments.email#" cfsqltype="cf_sql_varchar">
-			AND
-				userId = <cfqueryparam value="#session.userId#" cfsqltype="cf_sql_integer">				
-		</cfquery>
-		<cfif NOT structKeyExists(arguments,"id")>
-			<cfif local.contactEmail.recordCount GT 0>
-				<cfset arrayAppend(local.errors,"*Contact with same email id already exists")>
+		<cfif structKeyExists(arguments,"isExcel")>
+			<cfquery name="local.excelEmail" datasource="coldfusion">
+				SELECT 
+					id
+				FROM 
+					contacts
+				WHERE 
+					email=<cfqueryparam value="#arguments.email#" cfsqltype="cf_sql_varchar">
+				AND
+					userId = <cfqueryparam value="#session.userId#" cfsqltype="cf_sql_integer">				
+			</cfquery>
+			<cfif local.excelEmail.recordCount EQ 1>
+				<cfset arguments['id'] = encrypt(
+									local.excelEmail.id,
+									application.encryptionKey,
+									"AES",
+									"Hex"
+	
+								) 
+				>
+			</cfif>		
+		<cfelse>
+			<cfquery name="local.contactEmail" datasource="coldfusion">
+				SELECT 
+					email
+				FROM 
+					contacts
+				WHERE 
+					email=<cfqueryparam value="#arguments.email#" cfsqltype="cf_sql_varchar">
+				AND
+					userId = <cfqueryparam value="#session.userId#" cfsqltype="cf_sql_integer">				
+			</cfquery>
+			<cfif NOT structKeyExists(arguments,"id")>
+				<cfif local.contactEmail.recordCount GT 0>
+					<cfset arrayAppend(local.errors,"*Contact with same email id already exists")>
+				</cfif>
 			</cfif>
 		</cfif>
 		<cfif len(trim(arguments.email)) EQ 0>
@@ -384,6 +407,9 @@
 		<cfelseif NOT reFindNoCase("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$",arguments.email)>
 			<cfset arrayAppend(local.errors,"*Enter a valid email")>
 		</cfif>
+		
+
+
 	
 		<!--- VALIDATE PHONE--->
 		<cfif len(trim(arguments.phone)) EQ 0>
@@ -470,8 +496,10 @@
 		<cfif NOT arrayContains(local.publicArr,arguments.public)>
 			<cfset arrayAppend(local.errors,"*Can'nt change the value of public")>
 		</cfif>
-	
-		<!--- ADD EDIT FUNCTION CALL  --->
+		
+		
+
+		<!--- ADD EDIT FUNCTION CALL   --->
 		<cfset local.excelResult = {
 					'errors':[],
 					'remarks':""
@@ -486,6 +514,7 @@
 				<cfreturn local.errors>
 			<cfelse>
 				<cfset local.excelResult.remarks = structKeyExists(arguments,"id")?"UPDATED" : "ADDED">
+				<cfreturn local.excelResult>
 			</cfif>
 			
 		<cfelse>
@@ -496,7 +525,7 @@
 				<cfset local.excelResult.remarks = arrayToList(local.errors)>
 				<cfreturn local.excelResult>
 			</cfif>
-		</cfif> 
+		</cfif>
 	</cffunction> 
 	
 	<!--- ADD EDIT CONTACT --->
@@ -515,6 +544,7 @@
 		<cfargument name="hobbies" type="string" required="true">
 		<cfargument name="id" type="string" required="false">
 		<cfargument name="public" type="numeric" required="true">	
+		
 		<cftry>
 			<cfif NOT structKeyExists(arguments,"id") OR arguments.id EQ "">
 				<cfquery   datasource="coldfusion" result="local.contactAdd">
@@ -622,7 +652,8 @@
 					WHERE						
 						hobby_id 
 					NOT IN(<cfqueryparam value="#arguments.hobbies#" cfsqltype="cf_sql_varchar" list="true">)
-						
+					AND
+						contact_id=<cfqueryparam value="#local.decryptedId#" cfsqltype="cf_sql_integer">	
 				</cfquery>
 			
 				<cfif #arrayLen(local.newHobbiesToInsert)# GT 0 >
