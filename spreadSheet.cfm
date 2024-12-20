@@ -52,7 +52,7 @@
 	<cfset SpreadSheetSetColumnWidth(spreadsheetobj,11,50)>
 	<cfset SpreadSheetSetColumnWidth(spreadsheetobj,12,20)>
 	<cfset SpreadSheetSetColumnWidth(spreadsheetobj,13,20)>
-	<cfset SpreadSheetSetColumnWidth(spreadsheetobj,14,20)>
+	<cfset SpreadSheetSetColumnWidth(spreadsheetobj,14,60)>
 
 		
 

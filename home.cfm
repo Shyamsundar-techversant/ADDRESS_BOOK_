@@ -96,6 +96,15 @@
 						<button media="print" onclick="window.print();" >PRINT</button>
 						<button onclick="window.location.href='pdf.cfm';">PDF</button>
 						<button onclick="window.location.href='spreadSheet.cfm';">EXCEL</button>
+						<cfif structKeyExists(form,"excelSubmit")>
+							<cfoutput>
+								<button 
+									onclick="window.location.href='downloadExcel.cfm?filename=excelResult.xlsx';"
+								>
+										RESULT
+								</button>
+							</cfoutput>
+						</cfif>
 					</div>
 				</div>
 			</div>
