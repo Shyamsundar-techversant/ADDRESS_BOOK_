@@ -639,7 +639,7 @@
 				<cfset local.newHobbiesArray=ListToArray(local.newHobbies,",")>
 				<cfset local.newHobbiesToInsert = []>
 				
-				<cfloop array="#local.newHobbiesArray#" index="id">
+				<cfloop array="#local.newHobbiesArray#" index="local.id">
 					<cfif NOT ArrayFind(local.existingHobbiesArray,id)>
 						<cfset arrayAppend(local.newHobbiesToInsert,id)>
 					</cfif>
@@ -656,7 +656,7 @@
 						contact_id=<cfqueryparam value="#local.decryptedId#" cfsqltype="cf_sql_integer">	
 				</cfquery>
 			
-				<cfif #arrayLen(local.newHobbiesToInsert)# GT 0 >
+				<cfif arrayLen(local.newHobbiesToInsert) GT 0 >
 					<cfquery datasource="coldfusion" name="local.addNewHobbies">
 						INSERT INTO
 							contact_hobbies(
