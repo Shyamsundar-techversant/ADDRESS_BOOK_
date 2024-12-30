@@ -48,13 +48,13 @@
 		<cfset variables.dob = form.dob>
 		<cfset variables.email = form.email>
 		<cfset variables.phone = form.phone>
-		<cfset  variables.address = form.address>
+		<cfset variables.address = form.address>
 		<cfset variables.street = form.street>
 		<cfset variables.pincode = form.pincode>
 		<cfset variables.hobbies = form.hobby>	
 	</cfif>
-</cfif>
-<cfif structKeyExists(form,"excelSubmit")>
+
+<cfelseif structKeyExists(form,"excelSubmit")>
 	<cfinclude template="excelUpload.cfm">
 </cfif>
 <cfset variables.getContacts=application.dbObj.getData()>
@@ -95,7 +95,16 @@
 					<div class="options">
 						<button media="print" onclick="window.print();" >PRINT</button>
 						<button onclick="window.location.href='pdf.cfm';">PDF</button>
-						<button onclick="window.location.href='spreadSheet.cfm';">EXCEL</button>
+						<button onclick="window.location.href='spreadSheet.cfm?excelData=1';">EXCEL</button>
+						<cfif structKeyExists(form,"excelSubmit")>
+							<cfoutput>
+								<button 
+									onclick="window.location.href='downloadExcel.cfm?filename=excelResult.xlsx';"
+								>
+										RESULT
+								</button>
+							</cfoutput>
+						</cfif>
 					</div>
 				</div>
 			</div>
@@ -218,7 +227,7 @@
 			<div class="modal-dialog add-edit-contact">
 				<div class="modal-content">
 					<div class="modal-header">
-						<h5 class="modal-title" id="staticBackdropLabel">CREATE CONTACT</h5>
+						<h5 class="modal-title" id="add-edit-head">CREATE CONTACT</h5>
 						<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 					</div>
 					<div class="modal-body">

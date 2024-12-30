@@ -31,20 +31,21 @@
 											isExcel = 1
 										)
 	>	
+
 	<cfset excelRow = {
-				titleName = excelContactAdd.title,
-				firstname = excelContactAdd.firstname,
-				lastname = excelContactAdd.lastname,
-				genderName = excelContactAdd.gender,
-				dob = excelContactAdd.dob,
-				email = excelContactAdd.email,
-				phone = excelContactAdd.phone,
-				address = excelContactAdd.address,
-				street = excelContactAdd.street,
-				pincode = excelContactAdd.pincode,
-				hobbieName = excelContactAdd.hobbies,
-				public = excelContactAdd.public,
-				remarks = result.remarks			
+				'titleName' = excelContactAdd.title,
+				'firstname' = excelContactAdd.firstname,
+				'lastname' = excelContactAdd.lastname,
+				'genderName' = excelContactAdd.gender,
+				'dob' = excelContactAdd.dob,
+				'email' = excelContactAdd.email,
+				'phone' = excelContactAdd.phone,
+				'address' = excelContactAdd.address,
+				'street' = excelContactAdd.street,
+				'pincode' = excelContactAdd.pincode,
+				'hobbieName' = excelContactAdd.hobbies,
+				'public' = excelContactAdd.public,
+				'remarks' = result.remarks			
 
 			}
 	>
@@ -55,8 +56,7 @@
 	</cfif>
 </cfloop> 
 
-
-
+<cfinclude template = "excelResult.cfm">
 
 
 
