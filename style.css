@@ -332,7 +332,8 @@ a{
 /* PRINT */
 @media print {
 	.no-print,
-	.user-creation
+	.user-creation,
+	#template-cont
 	{ 
 		display: none !important;
 	}

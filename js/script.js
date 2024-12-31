@@ -32,6 +32,7 @@ $(document).ready(function(){
 		setTimeout(()=>{
 			$('#contacts-form').trigger('reset');
 		},2000);
+		document.getElementById('add-edit-head').textContent = "ADD CONTACT";
 
 		$('#add-cont').show();
 		$('#edit-cont').hide();	
@@ -142,6 +143,7 @@ $(document).ready(function(){
 	$('.edit-cont-details').on('click',function(){
 		document.getElementById('add-cont').style.display="none";
 		document.getElementById('edit-cont').style.display="block";
+		document.getElementById('add-edit-head').textContent = "EDIT CONTACT";
 
 		contactId=$(this).data('id');	
 		contThumb.show();
