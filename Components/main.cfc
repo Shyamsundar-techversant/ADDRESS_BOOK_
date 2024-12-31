@@ -1,22 +1,22 @@
 <cfcomponent>
 
 	<!--- Hash Password  --->
-	<cffunction name="hashPassword" access="private">
-		<cfargument name="userPassword" type="string" required="true">
-		<cfargument name="salt" type="string" required="true">
+	<cffunction name = "hashPassword" access = "private">
+		<cfargument name = "userPassword" type = "string" required = "true">
+		<cfargument name = "salt" type = "string" required = "true">
 		<cfset local.saltedPass = arguments.userPassword & arguments.salt>
 		<cfset local.hashedPass = hash(local.saltedPass,"SHA-256","UTF-8")>	
 		<cfreturn local.hashedPass>
 	</cffunction>
 
 	<!--- FORM VALIDATION --->
-	<cffunction name="validateForm" access="public" returntype="array">
-		<cfargument name="fullName" type="string" required="true">
-		<cfargument name="userEmail" type="string" required="true">
-		<cfargument name="username" type="string" required="true">
-		<cfargument name="password" type="string" required="true">
-		<cfargument name="passwordConf" type="string" required="true">
-		<cfset local.errors=[]>
+	<cffunction name = "validateForm" access = "public" returntype = "array">
+		<cfargument name = "fullName" type = "string" required = "true">
+		<cfargument name = "userEmail" type = "string" required = "true">
+		<cfargument name = "username" type = "string" required = "true">
+		<cfargument name = "password" type = "string" required = "true">
+		<cfargument name = "passwordConf" type = "string" required = "true">
+		<cfset local.errors = []>
 		<!--- Validate fullname --->
 		<cfif len(trim(arguments.fullName)) EQ 0>
 			<cfset arrayAppend(local.errors,"*Fullname is required")>
@@ -55,32 +55,32 @@
 	</cffunction>
 
 	<!--- Register User--->
-	<cffunction name="registerUser" access="public" returntype="string">
-		<cfargument name="fullName" type="string" required="true">
-		<cfargument name="emailId" type="string" required="true">
-		<cfargument name="userName" type="string" required="true">
-		<cfargument name="password" type="string" required="true">
+	<cffunction name = "registerUser" access = "public" returntype = "string">
+		<cfargument name = "fullName" type = "string" required = "true">
+		<cfargument name = "emailId" type = "string" required = "true">
+		<cfargument name = "userName" type = "string" required = "true">
+		<cfargument name = "password" type = "string" required = "true">
 		
-		<cfset local.result="">
+		<cfset local.result = "">
 		
 		<cftry>
-			<cfquery name="local.registerUser" datasource="coldfusion">
+			<cfquery name = "local.registerUser" datasource = "coldfusion">
 				SELECT 	
 					email,userName
 				FROM 
 					registeredUsers
 				WHERE 
-					email=<cfqueryparam value="#arguments.emailId#" cfsqltype="cf_sql_varchar">
+					email = <cfqueryparam value = "#arguments.emailId#" cfsqltype = "cf_sql_varchar">
 				AND	
-					userName = <cfqueryparam value="#arguments.userName#" cfsqltype="cf_sql_varchar">
+					userName = <cfqueryparam value = "#arguments.userName#" cfsqltype = "cf_sql_varchar">
 
 			</cfquery>
 			<cfif local.registerUser.recordCount GT 0>
-				<cfset local.result="User Already Exist">
+				<cfset local.result = "User Already Exist">
 			<cfelse>
 				<cfset local.salt = generateSecretKey('AES')>
-				<cfset local.hashedPassword=hashPassword(arguments.password,local.salt)>
-				<cfquery name="local.insertUser" datasource="coldfusion">
+				<cfset local.hashedPassword = hashPassword(arguments.password,local.salt)>
+				<cfquery name = "local.insertUser" datasource = "coldfusion">
 					INSERT INTO
 							registeredUsers(
 										fullName,
@@ -90,29 +90,29 @@
 										salt
 									)
 					VALUES(
-							<cfqueryparam value="#arguments.fullName#" cfsqltype="cf_sql_varchar">,
-							<cfqueryparam value="#arguments.emailId#" cfsqltype="cf_sql_varchar">,
-							<cfqueryparam value="#arguments.userName#" cfsqltype="cf_sql_varchar">,
-							<cfqueryparam value="#local.hashedPassword#" cfsqltype="cf_sql_varchar">,
-							<cfqueryparam value="#local.salt#" cfsqltype="cf_sql_varchar">
+							<cfqueryparam value = "#arguments.fullName#" cfsqltype = "cf_sql_varchar">,
+							<cfqueryparam value = "#arguments.emailId#" cfsqltype = "cf_sql_varchar">,
+							<cfqueryparam value = "#arguments.userName#" cfsqltype = "cf_sql_varchar">,
+							<cfqueryparam value = "#local.hashedPassword#" cfsqltype = "cf_sql_varchar">,
+							<cfqueryparam value = "#local.salt#" cfsqltype = "cf_sql_varchar">
 						)
 				</cfquery>
-				<cflocation url="logIn.cfm" addtoken="false"> 
+				<cflocation url = "logIn.cfm" addtoken = "false"> 
 			</cfif>
 			<cfreturn local.result>
 		<cfcatch>
-			<cfdump var="#cfcatch#">
+			<cfdump var = "#cfcatch#">
 			<cfreturn local.result>
 		</cfcatch>
 		</cftry>
 	</cffunction>
 
 	<!--- LOGIN FORM --->
-	<cffunction name="logUser" access="public" returntype="any">
-		<cfargument name="userName" type="string" required="true">
-		<cfargument name="password" type="string" required="true">		
+	<cffunction name = "logUser" access = "public" returntype = "any">
+		<cfargument name = "userName" type = "string" required = "true">
+		<cfargument name = "password" type = "string" required = "true">		
 		<cftry>
-			<cfquery name="local.userLog" datasource="coldfusion">
+			<cfquery name = "local.userLog" datasource = "coldfusion">
 				SELECT 
 					userName,
 					userId,
@@ -121,36 +121,36 @@
 				FROM 
 					registeredUsers
 				WHERE 
-					userName=<cfqueryparam value="#arguments.userName#" cfsqltype="cf_sql_varchar">					
+					userName = <cfqueryparam value = "#arguments.userName#" cfsqltype = "cf_sql_varchar">					
 			</cfquery>
 			<cfif local.userLog.recordCount EQ 1>
 				<cfset local.salt = local.userLog.salt>
 				<cfset local.hashedPassword = hashPassword(arguments.password,local.salt)>
 			
 				<cfif local.hashedPassword EQ local.userLog.password>
-					<cfset local.result="LogIn successful">
+					<cfset local.result = "LogIn successful">
 					<cfset session['username'] = arguments.username>
 					<cfset session['userId'] = local.userLog.userId>
-					<cflocation url="home.cfm" addtoken="false">
+					<cflocation url = "home.cfm" addtoken = "false">
 				<cfelse>
-					<cfset local.result="Invalid data">
+					<cfset local.result = "Invalid data">
 				</cfif>
 			<cfelse>
-				<cfset local.result="Invalid username or password">				
+				<cfset local.result = "Invalid username or password">				
 			</cfif>
 			<cfreturn local.hashedPassword>
 		<cfcatch>
-			<cfdump var="#cfcatch#">
-			<cfset local.result="#cfcatch.message#">
+			<cfdump var = "#cfcatch#">
+			<cfset local.result = "#cfcatch.message#">
 			<cfreturn local.result>
 		</cfcatch>
 		</cftry>
 	</cffunction>
 
 	<!--- GET TITLE--->
-	<cffunction name="getTitle" access="public" returntype="query">
+	<cffunction name = "getTitle" access = "public" returntype = "query">
 		<cftry>
-			<cfquery name="local.titleValue" datasource="coldfusion">
+			<cfquery name = "local.titleValue" datasource = "coldfusion">
 				SELECT 
 					id,
 					titles
@@ -161,16 +161,16 @@
 				<cfreturn local.titleValue>
 			</cfif>
 		<cfcatch>
-			<cfset local.result="#cfcatch.message#">
+			<cfset local.result = "#cfcatch.message#">
 			<cfreturn local.result>
 		</cfcatch>
 		</cftry>	
 	</cffunction>
 
 	<!--- GET GENDER --->
-	<cffunction name="getGender" access="public" returntype="query">
+	<cffunction name = "getGender" access = "public" returntype = "query">
 		<cftry>
-			<cfquery name="local.genderValues" datasource="coldfusion">
+			<cfquery name = "local.genderValues" datasource = "coldfusion">
 				SELECT 
 					id,
 					gender_values
@@ -182,16 +182,16 @@
 			</cfif>
 		<cfcatch>
 	
-			<cfset local.result="#cfcatch.message#">
+			<cfset local.result = "#cfcatch.message#">
 			<cfreturn local.result>
 		</cfcatch>
 		</cftry>
 	</cffunction>
 
 	<!--- GET HOBBIES --->
-	<cffunction name="getHobbies" access="public" returntype="query">
+	<cffunction name = "getHobbies" access = "public" returntype = "query">
 		<cftry>
-			<cfquery name="local.hobbyValues" datasource="coldfusion">
+			<cfquery name = "local.hobbyValues" datasource = "coldfusion">
 				SELECT 
 					id,
 					hobby_name
@@ -203,7 +203,7 @@
 			</cfif>
 		<cfcatch>
 	
-			<cfset local.result="#cfcatch.message#">
+			<cfset local.result = "#cfcatch.message#">
 			<cfreturn local.result>
 		</cfcatch>
 		</cftry>
@@ -211,35 +211,35 @@
 
 
 	<!--- VALIDATE CONTACT FORM--->
-	<cffunction name="validateFormAndCreateOrUpdateUser" access="remote" returntype="any">
-		<cfargument name="titleName" type="string" required = "false">
-		<cfargument name="title" type="numeric" required="false">
-		<cfargument name="firstname" type="string" required="true">
-		<cfargument name="lastname" type="string" required="true">
-		<cfargument name="genderName" type="string" required="false">
-		<cfargument name="gender" type="string" required="false">
-		<cfargument name="dob" type="string" required="true">
-		<cfargument name="formFile" type="string" required="false">
-		<cfargument name="email" type="string" required="true">
-		<cfargument name="phone" type="string" required="true">
-		<cfargument name="address" type="string" required="true">
-		<cfargument name="street" type="string" required="true">
-		<cfargument name="pincode" type="string" required="true">	
-		<cfargument name="hobbies" type="string" required="false">
-		<cfargument name="hobbieName"  type = "string" required="false">
-		<cfargument name="id" type="string" required="false">
-		<cfargument name="public" type="numeric" required="false">	
-		<cfargument name="isExcel" type="numeric" required="false">
+	<cffunction name = "validateFormAndCreateOrUpdateUser" access = "remote" returntype = "any">
+		<cfargument name = "titleName" type = "string" required = "false">
+		<cfargument name = "title" type = "numeric" required = "false">
+		<cfargument name = "firstname" type = "string" required = "true">
+		<cfargument name = "lastname" type = "string" required = "true">
+		<cfargument name = "genderName" type = "string" required = "false">
+		<cfargument name = "gender" type = "string" required = "false">
+		<cfargument name = "dob" type = "string" required = "true">
+		<cfargument name = "formFile" type = "string" required = "false">
+		<cfargument name = "email" type = "string" required = "true">
+		<cfargument name = "phone" type = "string" required = "true">
+		<cfargument name = "address" type = "string" required = "true">
+		<cfargument name = "street" type = "string" required = "true">
+		<cfargument name = "pincode" type = "string" required = "true">	
+		<cfargument name = "hobbies" type = "string" required = "false">
+		<cfargument name = "hobbieName"  type = "string" required = "false">
+		<cfargument name = "id" type = "string" required = "false">
+		<cfargument name = "public" type = "numeric" required = "false">	
+		<cfargument name = "isExcel" type = "numeric" required = "false">
 
-		<cfset local.errors=[]>	
+		<cfset local.errors = []>	
 
 		
 
 
 		<!--- Title --->
-		<cfset local.titleArr=[]>	
-		<cfset local.titleValues=getTitle()>
-		<cfloop query="local.titleValues">
+		<cfset local.titleArr = []>	
+		<cfset local.titleValues = getTitle()>
+		<cfloop query = "local.titleValues">
 			<cfset arrayAppend(local.titleArr,local.titleValues.id)>
 		</cfloop>
 		<cfif structKeyExists(arguments,"title")>
@@ -248,13 +248,13 @@
 			</cfif>
 		</cfif>
 		<cfif structKeyExists(arguments,"titleName")>
-			<cfquery name="local.getTitleId" datasource="coldfusion">
+			<cfquery name = "local.getTitleId" datasource = "coldfusion">
 				SELECT 
 					id
 				FROM
 					title
 				WHERE
-					titles = <cfqueryparam value="#arguments.titleName#" cfsqltype="cf_sql_varchar">
+					titles = <cfqueryparam value = "#arguments.titleName#" cfsqltype = "cf_sql_varchar">
 			</cfquery>
 			<cfif local.getTitleId.recordCount EQ 1>
 				<cfset arguments.title = local.getTitleId.id>
@@ -278,9 +278,9 @@
 		</cfif>
 
 		<!--- VALIDATE GENDER --->
-		<cfset local.genderArr=[]>
-		<cfset local.genderValues=getGender()>
-		<cfloop query="local.genderValues">
+		<cfset local.genderArr = []>
+		<cfset local.genderValues = getGender()>
+		<cfloop query = "local.genderValues">
 			<cfset arrayAppend(local.genderArr,local.genderValues.id)>	
 		</cfloop>
 		<cfif structKeyExists(arguments,"gender")>
@@ -289,13 +289,13 @@
 			</cfif> 
 		</cfif>
 		<cfif structKeyExists(arguments,"genderName")>
-			<cfquery name="local.getGenderId" datasource="coldfusion">
+			<cfquery name = "local.getGenderId" datasource = "coldfusion">
 				SELECT 
 					id
 				FROM
 					gender
 				WHERE
-					gender_values = <cfqueryparam value="#arguments.genderName#" cfsqltype="cf_sql_varchar">
+					gender_values = <cfqueryparam value = "#arguments.genderName#" cfsqltype = "cf_sql_varchar">
 			</cfquery>
 			<cfif local.getGenderId.recordCount EQ 1>
 				<cfset arguments.gender = local.getGenderId.id>
@@ -313,42 +313,42 @@
 		</cfif> 
 		
 		<!--- VALIDATE IMAGE --->		
-		<cfset local.maxSize=5*1024*1024>
+		<cfset local.maxSize = 5*1024*1024>
 		<cfset local.allowedExtensions = "jpeg,jpg,png,gif">
-		<cfset local.uploadedImage=structNew()>
+		<cfset local.uploadedImage = structNew()>
 
 		<cfif NOT structKeyExists(form,"uploadImg") OR arguments.formFile EQ "">
 			<cfif NOT structKeyExists(arguments,"id") OR arguments.id EQ "">
-				<cfif arguments.isExcel>
+				<cfif structKeyExists(arguments,"isExcel") AND arguments.isExcel>
 					<cfset arguments['uploadImg'] = "contactImage.png">	
 				<cfelse>
 					<cfset arrayAppend(local.errors,"* Photo is required")>
 				</cfif>
 			<cfelse>
 				<cfset local.decryptedId=decrypt(arguments.id,application.encryptionKey,"AES","Hex")>
-				<cfquery name="local.contactImage" datasource="coldfusion">
+				<cfquery name = "local.contactImage" datasource = "coldfusion">
 					SELECT 
 						imagePath
 					FROM 
 						contacts
 					WHERE
-						id=<cfqueryparam value="#local.decryptedId#" cfsqltype="cf_sql_integer">
+						id = <cfqueryparam value = "#local.decryptedId#" cfsqltype = "cf_sql_integer">
 				</cfquery>					
 				<cfset arguments['uploadImg'] = local.contactImage.imagePath>	
 			</cfif>
 		<cfelse>
-			<cfset local.uploadDir=expandPath('./Uploads/')>
+			<cfset local.uploadDir = expandPath('./Uploads/')>
 
 			<cfif NOT directoryExists(local.uploadDir)>
-				<cfdirectory action="create" directory="#local.uploadDir#">
+				<cfdirectory action = "create" directory = "#local.uploadDir#">
 			</cfif>
 
 			<cfif len(trim(arguments.formFile))>
-				<cffile action="upload"
-					fileField="form.uploadImg"
-					destination="#application.imageSavePath#"
-					nameconflict="makeunique"
-					result="local.uploadedImage"					
+				<cffile action = "upload"
+					fileField = "form.uploadImg"
+					destination = "#application.imageSavePath#"
+					nameconflict = "makeunique"
+					result = "local.uploadedImage"					
 				> 
 			</cfif>
 
@@ -360,20 +360,21 @@
 				<cfset arrayAppend(local.errors,"*Image should be jpeg,png or gif format")>
 			</cfif>
 
-			<cfset local.imagePath=local.uploadedImage.SERVERFILE>
+			<cfset local.imagePath = local.uploadedImage.SERVERFILE>
 			<cfset arguments['uploadImg'] = local.imagePath>
 		</cfif>
+
 		<!--- VALIDATE EMAIL  --->
 		<cfif structKeyExists(arguments,"isExcel")>
-			<cfquery name="local.excelEmail" datasource="coldfusion">
+			<cfquery name = "local.excelEmail" datasource = "coldfusion">
 				SELECT 
 					id
 				FROM 
 					contacts
 				WHERE 
-					email=<cfqueryparam value="#arguments.email#" cfsqltype="cf_sql_varchar">
+					email = <cfqueryparam value = "#arguments.email#" cfsqltype = "cf_sql_varchar">
 				AND
-					userId = <cfqueryparam value="#session.userId#" cfsqltype="cf_sql_integer">				
+					userId = <cfqueryparam value = "#session.userId#" cfsqltype = "cf_sql_integer">				
 			</cfquery>
 			<cfif local.excelEmail.recordCount EQ 1>
 				<cfset arguments['id'] = encrypt(
@@ -383,25 +384,37 @@
 									"Hex"
 	
 								) 
-				>
+				>	
+								
 			</cfif>		
 		<cfelse>
-			<cfquery name="local.contactEmail" datasource="coldfusion">
+
+			<cfquery name = "local.contactEmail" datasource = "coldfusion">
 				SELECT 
 					email
 				FROM 
 					contacts
 				WHERE 
-					email=<cfqueryparam value="#arguments.email#" cfsqltype="cf_sql_varchar">
+					email = <cfqueryparam value = "#arguments.email#" cfsqltype = "cf_sql_varchar">
 				AND
-					userId = <cfqueryparam value="#session.userId#" cfsqltype="cf_sql_integer">				
+					userId = <cfqueryparam value = "#session.userId#" cfsqltype = "cf_sql_integer">
+				<cfif structKeyExists(arguments,"id") AND len(arguments.id) NEQ 0>
+					AND 
+					    id != <cfqueryparam value = "#decrypt(arguments.id,application.encryptionKey,"AES","Hex")#" cfsqltype="cf_sql_integer">
+				</cfif>
 			</cfquery>
+
 			<cfif NOT structKeyExists(arguments,"id")>
+				<cfif local.contactEmail.recordCount GT 0>
+					<cfset arrayAppend(local.errors,"*Contact with same email id already exists")>
+				</cfif>
+			<cfelse>
 				<cfif local.contactEmail.recordCount GT 0>
 					<cfset arrayAppend(local.errors,"*Contact with same email id already exists")>
 				</cfif>
 			</cfif>
 		</cfif>
+
 		<cfif len(trim(arguments.email)) EQ 0>
 			<cfset arrayAppend(local.errors,"*Email is required")>
 		<cfelseif NOT reFindNoCase("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$",arguments.email)>
@@ -444,7 +457,7 @@
 				
 				<cfset local.excelHobbyList = arguments.hobbieName>				
 				<cfset local.invalidHobby = [] >
-				<cfloop list="#local.excelHobbyList#" item="local.hobbyName">
+				<cfloop list = "#local.excelHobbyList#" item="local.hobbyName">
 					<cfif NOT  ListFindNoCase(local.dbHobbyList,local.hobbyName)>
 						<cfset arrayAppend(local.invalidHobby,local.hobbyName)>
 					</cfif>				
@@ -639,7 +652,7 @@
 				<cfset local.newHobbiesArray=ListToArray(local.newHobbies,",")>
 				<cfset local.newHobbiesToInsert = []>
 				
-				<cfloop array="#local.newHobbiesArray#" index="local.id">
+				<cfloop array="#local.newHobbiesArray#" index="id">
 					<cfif NOT ArrayFind(local.existingHobbiesArray,id)>
 						<cfset arrayAppend(local.newHobbiesToInsert,id)>
 					</cfif>
@@ -669,7 +682,7 @@
 									<cfqueryparam value="#local.decryptedId#" cfsqltype="cf_sql_integer">,
 									<cfqueryparam value="#local.hobby#" cfsqltype="cf_sql_integer">
 								)
-								<cfif local.i LT #arrayLen(local.newHobbiesToInsert)#>
+								<cfif local.i LT arrayLen(local.newHobbiesToInsert)>
 									,
 								</cfif>
 							</cfloop>;

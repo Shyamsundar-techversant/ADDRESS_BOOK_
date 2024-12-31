@@ -1,5 +1,5 @@
-<cffile action="upload" fileField="form.excelUpload" destination="#application.tempPath#"
-	nameconflict="makeunique" result="excelUploadedFile"
+<cffile action = "upload" fileField = "form.excelUpload" destination = "#application.tempPath#"
+	nameconflict = "makeunique" result = "excelUploadedFile"
 >
 <cfset uploadDir = expandPath('./temp/')>
 <cfset excelUploadFile = excelUploadedFile.SERVERFILE>
@@ -9,8 +9,8 @@
 	src = "#excelPath#"
 	excludeHeaderRow = "true"
 	headerrow = "1"
-	query="excelContactAdd"
-	sheetname="AddressBook"
+	query = "excelContactAdd"
+	sheetname = "AddressBook"
 >
 <cfset errorArray = []>
 <cfset successArray = []>

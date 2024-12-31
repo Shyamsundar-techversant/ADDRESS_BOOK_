@@ -58,6 +58,7 @@
 	<cfinclude template="excelUpload.cfm">
 </cfif>
 <cfset variables.getContacts=application.dbObj.getData()>
+
 <!DOCTYPE html>
 <html>
 	<head>
